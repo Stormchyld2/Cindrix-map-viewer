@@ -1,0 +1,12 @@
+{
+  "identifier": "default",
+  "description": "Main viewer window permissions",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-is-fullscreen",
+    "core:window:allow-set-fullscreen"
+  ]
+}
