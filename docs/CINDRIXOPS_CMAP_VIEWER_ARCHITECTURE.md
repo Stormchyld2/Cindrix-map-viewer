@@ -1,7 +1,7 @@
-# CindrixOps Map Viewer — Windows-First Architecture
+# CindrixOps CMAP Viewer — Windows-First Architecture
 
-**Status:** Approved development direction; implementation not yet started  
-**Version:** 1.0 (initial architecture baseline)  
+**Status:** Windows application foundation committed; map viewer functionality remains under development  
+**Version:** 1.1 (Windows foundation)  
 **Date:** 2026-10-22  
 **Repository:** `Stormchyld2/Cindrix-map-viewer` (standalone viewer)
 **Upstream architecture:** `Stormchyld2/Cindrix-Ops/docs/CINDRIXOPS_CMAP_VIEWER_ARCHITECTURE.md`  
@@ -160,3 +160,11 @@ Viewer imports and stores `.cmap` in a managed local library. Preserve package i
 ---
 
 **Change control:** This file is the dedicated implementation architecture for the map viewer. It does not authorize changing unrelated CindrixOps modules or adopting new security requirements without approval.
+
+## 10. Windows-first UI and CI decisions (2026-10-22)
+
+- Product name: **CindrixOps CMAP Viewer**.
+- Default startup: **fullscreen** on Windows, with an explicit exit/toggle control. Preserve responsive touch-friendly layouts for later tablets/Android; avoid desktop-only interaction assumptions.
+- Primary targets: Windows first, then Android tablets/phones using shared Tauri 2/Svelte/TypeScript/Rust code. Do not remove Windows support after Android launch.
+- GitHub Actions: on push/PR/manual dispatch, run frontend tests, Svelte/TypeScript checks, frontend build, Rust tests, and Windows NSIS installer build. Upload installer as artifact only after passing all steps. Do not report green CI or downloadable installers without verifying actual run conclusions and artifacts.
+- Current implementation checkpoint: initial project shell, fullscreen configuration and toggle, frontend foundation test, and Windows CI workflow exist. `.cmap` reader/writer, real map rendering, exporter, and transfers are still unimplemented.
