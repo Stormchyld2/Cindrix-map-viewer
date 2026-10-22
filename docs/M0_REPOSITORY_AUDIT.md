@@ -26,3 +26,11 @@ Create a conventional project scaffold, Rust package-format code and tests, fron
 Precise upstream map backend/storage layout, current CI outcomes, Windows minimum OS, optional encryption/signing, and final `.cmap` byte-level schema must be verified or decided before feature freeze.
 
 **Protection note:** The `.cmap` extension by itself provides neither encryption nor DRM.
+## M1 progress checkpoint (2026-10-22)
+
+- Initial Windows-first Tauri 2/Svelte 5/TypeScript application scaffold committed, named **CindrixOps CMAP Viewer**.
+- Fullscreen startup configured with a visible fullscreen toggle; responsive shell anticipates tablet/Android layout.
+- Windows GitHub Actions workflow added: frontend tests, Svelte checks, Vite build, Rust tests, NSIS installer, artifact upload. **Actual workflow success and installer artifact not yet verified.**
+- Rust `src-tauri/src/cmap.rs` now implements a `.cmap` v1 ZIP-compatible writer and read-only validator, JSON manifest, SHA-256 verification, path and archive-size checks, and unit tests for round trip, traversal, duplicate declarations, unsupported version, tampering and overwrite refusal.
+- **Still outstanding before M1 signoff:** confirm GitHub Actions compilation and test results; correct failures; add binary fixtures, symlink and zip-bomb cases, robust atomic installation/recovery; freeze the schema; add actual viewer import and map rendering in M2. The writer currently accepts in-memory payloads; production multi-GB maps will require streaming IO rather than loading entire PMTiles files into RAM.
+- `.cmap` is a structured package with integrity checks, not encryption. Protection/encryption policy remains an open owner decision.
