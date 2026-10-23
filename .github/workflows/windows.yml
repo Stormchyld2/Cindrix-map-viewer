@@ -26,6 +26,27 @@ jobs:
         run: npm run check
       - name: Frontend build
         run: npm run build
+      - name: Generate required Windows icon
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force src-tauri/icons | Out-Null
+          Add-Type -AssemblyName System.Drawing
+          $bmp = New-Object System.Drawing.Bitmap(256, 256)
+          $g = [System.Drawing.Graphics]::FromImage($bmp)
+          $g.Clear([System.Drawing.Color]::FromArgb(25,31,38))
+          $pen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(215,181,109), 12)
+          $g.DrawEllipse($pen, 30, 30, 196, 196)
+          $g.DrawLine($pen, 128, 15, 128, 241)
+          $g.DrawLine($pen, 15, 128, 241, 128)
+          $g.Dispose()
+          $handle = $bmp.GetHicon()
+          $icon = [System.Drawing.Icon]::FromHandle($handle)
+          $stream = [System.IO.File]::Create('src-tauri/icons/icon.ico')
+          $icon.Save($stream)
+          $stream.Close()
+          $bmp.Save('src-tauri/icons/icon.png', [System.Drawing.Imaging.ImageFormat]::Png)
+          $icon.Dispose()
+          $bmp.Dispose()
       - name: Rust tests
         run: cargo test --manifest-path src-tauri/Cargo.toml
       - name: Build Windows installer
