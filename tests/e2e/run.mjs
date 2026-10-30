@@ -162,6 +162,8 @@ async function openAndLook(v, label, pick) {
   const { page, ctx, seen, problems } = await visit(browser, label, v, pick);
   try {
     await page.getByText("Open a phone map").waitFor({ timeout: 15000 });
+    await page.waitForTimeout(300);
+    await shot(page, label + "-start.png");
     const st = await insideScreen(page, ".start button");
     check(st.length === 1 && st[0].l >= 0 && st[0].r <= st[0].vw, label + ": the start button fits the screen");
     await page.getByRole("button", { name: "Open a map file" }).click();
