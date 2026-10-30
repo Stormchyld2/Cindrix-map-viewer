@@ -8,7 +8,7 @@ jobs:
   browser-test:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,22 +25,6 @@ jobs:
       - name: Open real maps in a browser and try them
         shell: bash
         run: bash .github/scripts/annotate.sh node tests/e2e/run.mjs
-      - name: Put the screenshots on a review branch
-        if: always() && github.event_name == 'pull_request'
-        shell: bash
-        run: |
-          set -e
-          mkdir -p /tmp/shots && cp tests/e2e/out/*.png /tmp/shots/ 2>/dev/null || true
-          if ls /tmp/shots/*.png >/dev/null 2>&1; then
-            git config user.name "ci"; git config user.email "ci@users.noreply.github.com"
-            git checkout -q --orphan ci-screenshots
-            git rm -rfq . || true
-            cp /tmp/shots/*.png .
-            git add ./*.png
-            git commit -qm "Screenshots from the browser test"
-            git push -fq origin ci-screenshots
-          fi
-        continue-on-error: true
       - name: Keep the screenshots
         if: always()
         uses: actions/upload-artifact@v4
