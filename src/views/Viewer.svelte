@@ -14,20 +14,20 @@
   const KIND_NAMES: Record<Kind, string> = { street: 'Street', topo: 'Topo', aerial: 'Aerial' };
   const KIND_ORDER: Kind[] = ['street', 'topo', 'aerial'];
 
-  let info: CmapInfo | null = $state(null);
-  let overlays: Overlays | null = $state(null);
+  let info = $state<CmapInfo | null>(null);
+  let overlays = $state<Overlays | null>(null);
   let error = $state('');
   let busy = $state(false);
-  let kind: Kind = $state('street');
+  let kind = $state<Kind>('street');
   let mapOnly = $state(false);
   let panel = $state(false);
   let metric = $state(false);
-  let centre: [number, number] = $state([0, 0]);
+  let centre = $state<[number, number]>([0, 0]);
   let zoom = $state(0);
-  let readout: 'mgrs' | 'dms' | 'deg' = $state('mgrs');
+  let readout = $state<'mgrs' | 'dms' | 'deg'>('mgrs');
   let where = $state('');
 
-  let el: HTMLDivElement | undefined = $state();
+  let el = $state<HTMLDivElement | undefined>(undefined);
   let map: MLMap | null = null;
   let ml: typeof import('maplibre-gl') | null = null;
   let markers: Marker[] = [];
