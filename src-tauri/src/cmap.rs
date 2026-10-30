@@ -89,8 +89,6 @@ pub struct Piece {
     pub bytes: Vec<u8>,
     /// MIME type
     pub content_type: &'static str,
-    /// `Some("gzip")` when the bytes are gzip-compressed and the web view should unpack them.
-    pub encoding: Option<&'static str>,
 }
 
 fn plain(msg: &str) -> String {
@@ -213,11 +211,8 @@ impl OpenCmap {
         }
         let mut f = File::open(&self.path).map_err(|_| plain("The map file could not be opened."))?;
         let bytes = read_at(&mut f, l.data_offset + off, len as usize)?;
-        Ok(Some(Piece {
-            bytes,
-            content_type: mime(&l.tile_type),
-            encoding: if l.compression == "gzip" { Some("gzip") } else { None },
-        }))
+        // gzip tiles are handed over as they are; the screen unpacks them (src/lib/tiles.ts)
+        Ok(Some(Piece { bytes, content_type: mime(&l.tile_type) }))
     }
 
     /// One lettering file (`range` like `0-255`) for a font, or `None`.
@@ -225,7 +220,7 @@ impl OpenCmap {
         let Some(g) = self.manifest.glyphs.iter().find(|g| g.font == font && g.range == range) else { return Ok(None) };
         let mut f = File::open(&self.path).map_err(|_| plain("The map file could not be opened."))?;
         let bytes = read_at(&mut f, g.offset, g.length as usize)?;
-        Ok(Some(Piece { bytes, content_type: "application/x-protobuf", encoding: None }))
+        Ok(Some(Piece { bytes, content_type: "application/x-protobuf" }))
     }
 }
 
@@ -316,7 +311,6 @@ mod tests {
             let t = c.tile("street", e[0], e[1], e[2]).unwrap().expect("listed tile");
             assert_eq!(t.bytes.len(), e[4] as usize);
             assert_eq!(t.content_type, "application/x-protobuf");
-            assert!(t.encoding.is_none());
         }
         assert!(c.tile("street", 14, 1000, 1000).unwrap().is_none());
         assert!(c.tile("topo", list[0][0], list[0][1], list[0][2]).unwrap().is_none());

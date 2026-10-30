@@ -6,6 +6,6 @@ log=$(mktemp)
 code=$?
 cat "$log"
 if [ $code -ne 0 ]; then
-  grep -E "error|Error|FAILED|panicked|^\s*-->|\.svelte|\.ts:|assert" "$log" | head -60 | cut -c1-400 | while IFS= read -r l; do echo "::error::$l"; done
+  grep -v "^::" "$log" | grep -E "error|Error|FAIL|panicked|^\s*-->|\.svelte|\.ts:|assert" | head -60 | cut -c1-400 | while IFS= read -r l; do echo "::error::$l"; done
 fi
 exit $code

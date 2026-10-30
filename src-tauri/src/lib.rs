@@ -34,13 +34,10 @@ fn startup_file() -> Option<String> {
     std::env::args().skip(1).find(|a| a.to_lowercase().ends_with(".cmap") && std::path::Path::new(a).is_file())
 }
 
-fn reply(status: u16, content_type: Option<&str>, encoding: Option<&str>, body: Vec<u8>) -> tauri::http::Response<Vec<u8>> {
+fn reply(status: u16, content_type: Option<&str>, body: Vec<u8>) -> tauri::http::Response<Vec<u8>> {
     let mut b = tauri::http::Response::builder().status(status).header("Access-Control-Allow-Origin", "*");
     if let Some(t) = content_type {
         b = b.header("Content-Type", t);
-    }
-    if let Some(e) = encoding {
-        b = b.header("Content-Encoding", e);
     }
     b.body(body).unwrap_or_else(|_| tauri::http::Response::new(Vec::new()))
 }
@@ -66,14 +63,14 @@ fn percent_decode(s: &str) -> String {
 
 /// Answer one request for a tile (`/tiles/<kind>/<z>/<x>/<y>`) or lettering (`/glyphs/<font>/<range>.pbf`).
 fn serve(path: &str) -> tauri::http::Response<Vec<u8>> {
-    let Some(map) = current() else { return reply(404, None, None, Vec::new()) };
+    let Some(map) = current() else { return reply(404, None, Vec::new()) };
     let parts: Vec<&str> = path.trim_start_matches('/').split('/').collect();
     let found = match parts.as_slice() {
         ["tiles", kind, z, x, y] => {
             let y = y.split('.').next().unwrap_or("");
             match (z.parse::<u32>(), x.parse::<u32>(), y.parse::<u32>()) {
                 (Ok(z), Ok(x), Ok(y)) => map.tile(kind, z, x, y),
-                _ => return reply(400, None, None, Vec::new()),
+                _ => return reply(400, None, Vec::new()),
             }
         }
         ["glyphs", font, range] => {
@@ -82,14 +79,14 @@ fn serve(path: &str) -> tauri::http::Response<Vec<u8>> {
             let range = range.trim_end_matches(".pbf");
             map.glyph(&first, range)
         }
-        _ => return reply(404, None, None, Vec::new()),
+        _ => return reply(404, None, Vec::new()),
     };
     match found {
-        Ok(Some(p)) => reply(200, Some(p.content_type), p.encoding, p.bytes),
+        Ok(Some(p)) => reply(200, Some(p.content_type), p.bytes),
         // A tile or lettering file the map does not hold is 404: the map engine treats that as an empty square
         // (outside the area, or beyond the detail the map was cut with), not as a fault.
-        Ok(None) => reply(404, None, None, Vec::new()),
-        Err(_) => reply(500, None, None, Vec::new()),
+        Ok(None) => reply(404, None, Vec::new()),
+        Err(_) => reply(500, None, Vec::new()),
     }
 }
 

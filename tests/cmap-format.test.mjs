@@ -88,3 +88,14 @@ test("a hostile or broken map never gets through to the screen", () => {
   assert.equal(colour("#abc", "#000"), "#abc");
   assert.equal(colour("#xyz", "#000"), "#000");
 });
+
+import { isGzip } from "../src/lib/tiles.ts";
+import { gzipSync } from "node:zlib";
+
+test("gzip tiles are recognised by their first two bytes", () => {
+  const packed = gzipSync(Buffer.from("tile"));
+  assert.equal(isGzip(packed.buffer.slice(packed.byteOffset, packed.byteOffset + packed.byteLength)), true);
+  assert.equal(isGzip(new Uint8Array([0x1f]).buffer), false);
+  assert.equal(isGzip(new ArrayBuffer(0)), false);
+  assert.equal(isGzip(new Uint8Array([0x0a, 0x1f, 0x8b]).buffer), false);
+});

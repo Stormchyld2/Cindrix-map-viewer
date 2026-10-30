@@ -9,6 +9,7 @@
   import { toDms, toMgrs } from '../lib/coords';
   import { drawingFeatures, fmtArea, fmtLength, labelPoint, measureOf } from '../lib/mapdraw';
   import { readOverlays, routeLine, type Overlays } from '../lib/overlays';
+  import { registerTileProtocol } from '../lib/tiles';
 
   type Kind = 'street' | 'topo' | 'aerial';
   const KIND_NAMES: Record<Kind, string> = { street: 'Street', topo: 'Topo', aerial: 'Aerial' };
@@ -85,6 +86,7 @@
       const [maplibregl, { layers, namedFlavor }] = await Promise.all([import('maplibre-gl'), import('@protomaps/basemaps')]);
       ml = maplibregl;
       const base = mapBase();
+      registerTileProtocol(maplibregl, base);
       const hasLetters = i.glyphs.length > 0;
       const usable = i.layers.filter((l) => !i.unsupported.includes(l.kind));
       if (!usable.length) {
@@ -95,7 +97,7 @@
       const rasters: unknown[] = [];
       rasterIds = {};
       for (const l of usable) {
-        const url = base + 'tiles/' + l.kind + '/{z}/{x}/{y}';
+        const url = 'cmaptile://' + l.kind + '/{z}/{x}/{y}';
         if (l.kind === 'street') {
           sources.street = { type: 'vector', tiles: [url], minzoom: l.min_zoom, maxzoom: l.max_zoom, attribution: '© OpenStreetMap contributors' };
         } else if (l.kind === 'topo' || l.kind === 'aerial') {
@@ -145,6 +147,7 @@
         zoom = m.getZoom();
       };
       m.on('move', sync);
+      m.on('idle', () => box.setAttribute('data-ready', '1')); // lets tests (and nothing else) know the picture is drawn
       m.on('load', () => {
         sync();
         wireOverlays(m);
