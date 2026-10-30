@@ -230,6 +230,22 @@ for (const v of [{ width: 360, height: 640, label: "phone360" }, { width: 320, h
   check((await page.locator(".pinmark").count()) === 2, v.label + ": both pins are on the map (" + (await page.locator(".pinmark").count()) + ")");
   await page.getByRole("button", { name: "Pins, areas, drawings and directions" }).click();
   await page.waitForSelector(".sheet");
+  // the position box sits at the top, clear of the scale bar and the map credit at the bottom
+  const clash = await page.evaluate(() => {
+    const r = (q) => document.querySelector(q)?.getBoundingClientRect();
+    const a = r(".readout"), others = [r(".maplibregl-ctrl-scale"), r(".maplibregl-ctrl-attrib")].filter(Boolean);
+    const hit = (p, q) => !(p.right <= q.left || q.right <= p.left || p.bottom <= q.top || q.bottom <= p.top);
+    const kids = [...document.querySelectorAll(".readout > *")].map((e) => e.getBoundingClientRect());
+    return kids.some((k) => others.some((o) => hit(k, o))) || !a;
+  });
+  check(!clash, v.label + ": the position box does not overlap the scale bar or the map credit");
+  const z0 = await page.locator(".readout span", { hasText: "zoom" }).innerText();
+  await page.getByRole("button", { name: "Zoom in" }).click();
+  await page.waitForTimeout(700);
+  const z1 = await page.locator(".readout span", { hasText: "zoom" }).innerText();
+  check(parseFloat(z1.replace("zoom", "")) > parseFloat(z0.replace("zoom", "")), v.label + ": the Zoom in button zooms in (" + z0 + " to " + z1 + ")");
+  await page.getByRole("button", { name: "Zoom out" }).click();
+  await page.waitForTimeout(700);
   const sh = (await insideScreen(page, ".sheet"))[0];
   check(sh.l >= -0.5 && sh.r <= sh.vw + 0.5 && sh.b <= sh.vh + 0.5, v.label + ": the list of marks fits the screen");
   const txt = await page.locator(".sheet").innerText();
@@ -241,7 +257,7 @@ for (const v of [{ width: 360, height: 640, label: "phone360" }, { width: 320, h
   await page.getByRole("button", { name: "Full screen map" }).click();
   await page.waitForTimeout(300);
   const fs = await insideScreen(page, ".float button");
-  check((await page.locator(".bar").count()) === 0 && fs.length === 3 && fs.every((b) => b.l >= 0 && b.r <= b.vw && b.t >= 0 && b.b <= b.vh), v.label + ": full screen shows only the map and three small buttons, all on screen");
+  check((await page.locator(".bar").count()) === 0 && fs.length === 5 && fs.every((b) => b.l >= 0 && b.r <= b.vw && b.t >= 0 && b.b <= b.vh), v.label + ": full screen shows only the map and its five small buttons, all on screen");
   await shot(page, v.label + "-fullscreen.png");
   await ctx.close();
 }

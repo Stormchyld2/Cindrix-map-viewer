@@ -133,7 +133,12 @@
         maxTileCacheSize: 200,
         // a map cut for one area has nothing beyond its edge: stop at the edge
         maxBounds: [[w - 0.1, s - 0.1], [e + 0.1, n + 0.1]],
+        // north stays up: a grid reference only makes sense on a map that does not turn
+        dragRotate: false,
+        pitchWithRotate: false,
+        touchPitch: false,
       });
+      m.touchZoomRotate.disableRotation();
       map = m;
       m.addControl(new maplibregl.ScaleControl({ unit: metric ? 'metric' : 'imperial' }), 'bottom-left');
       m.on('error', (ev) => {
@@ -321,7 +326,8 @@
 
 {#if !info}
   <section class="start">
-    <div class="symbol" aria-hidden="true">⌖</div>
+    <img class="logo" src="/flame.png" alt="" width="104" height="104" />
+    <div class="brandname">CINDRIXOPS <strong>MAP VIEWER</strong></div>
     <h2>Open a phone map</h2>
     <p>Choose a <strong>.cmap</strong> file. Make one in CindrixOps: <em>Maps › Send to phone</em>, then copy the file to this device.</p>
     <button class="primary" onclick={choose} disabled={busy} title="Choose a phone map file on this device">{busy ? 'Opening…' : 'Open a map file'}</button>
@@ -368,6 +374,14 @@
         <button class="ic solid" onclick={wholeMap} title="Show the whole map" aria-label="Show the whole map">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M4 12h16M12 4v16" /></svg>
         </button>
+        <div class="zoomgrp">
+          <button class="ic solid" onclick={() => map?.zoomIn({ duration: 250 })} title="Zoom in" aria-label="Zoom in">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          </button>
+          <button class="ic solid" onclick={() => map?.zoomOut({ duration: 250 })} title="Zoom out" aria-label="Zoom out">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14" /></svg>
+          </button>
+        </div>
       </div>
 
       <div class="readout">
@@ -429,7 +443,9 @@
 
 <style>
   .start { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 24px; min-height: 100%; }
-  .start .symbol { font-size: 72px; color: var(--accent); line-height: 1; }
+  .start .logo { width: 104px; height: 104px; object-fit: contain; }
+  .start .brandname { font-size: 12px; letter-spacing: 3px; color: var(--muted); }
+  .start .brandname strong { color: var(--accent); font-weight: 600; }
   .start h2 { margin: 0; font-size: 24px; color: #fff; }
   .start p { margin: 0; max-width: 34ch; color: #c4cbd0; line-height: 1.45; }
   .primary { background: var(--accent); color: #11171c; font-weight: 600; min-height: 48px; padding: 12px 22px; font-size: 16px; }
@@ -453,7 +469,8 @@
   .stage { position: relative; flex: 1; min-height: 0; }
   .map { position: absolute; inset: 0; }
   .float { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 8px; z-index: 5; }
-  .readout { position: absolute; left: 8px; bottom: 34px; right: 60px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; z-index: 4; pointer-events: none; }
+  .zoomgrp { display: flex; flex-direction: column; gap: 2px; margin-top: 10px; }
+  .readout { position: absolute; left: 8px; top: 10px; right: 64px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; z-index: 4; pointer-events: none; }
   .readout button { pointer-events: auto; min-height: 36px; padding: 4px 10px; background: rgba(17, 23, 28, 0.85); border-color: var(--line2); font-variant-numeric: tabular-nums; font-size: 14px; }
   .readout span { background: rgba(17, 23, 28, 0.85); padding: 4px 8px; border-radius: 6px; font-size: 12px; color: var(--muted); }
   .readout .where { color: #f5e8c7; }
@@ -484,7 +501,7 @@
     .bar { gap: 4px; padding: 4px 6px; }
     .seg button { padding: 0 8px; font-size: 13px; }
     .name { font-size: 14px; }
-    .readout { right: 56px; }
+    .readout { right: 60px; }
   }
 
   :global(.pinmark) { display: flex; align-items: center; gap: 6px; pointer-events: none; }
