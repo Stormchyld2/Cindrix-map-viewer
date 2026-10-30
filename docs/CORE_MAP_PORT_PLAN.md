@@ -1,3 +1,5 @@
+> **Superseded 2026-10-30.** This document was written before the viewer was compared with the main program. The `.cmap` format here (a ZIP with `manifest.json`) is **not** the format CindrixOps writes; see [CMAP_FORMAT.md](CMAP_FORMAT.md). Kept for history.
+
 # Core-map parity implementation plan
 
 Source of truth: `Stormchyld2/Cindrix-Ops` on its default branch. The standalone viewer must reuse the actual map implementation rather than recreate a simplified mock.

@@ -1,3 +1,5 @@
+> **Superseded 2026-10-30.** This document was written before the viewer was compared with the main program. The `.cmap` format here (a ZIP with `manifest.json`) is **not** the format CindrixOps writes; see [CMAP_FORMAT.md](CMAP_FORMAT.md). Kept for history.
+
 # M0 — Repository Audit and Integration Checkpoint
 
 **Date:** 2026-10-22  

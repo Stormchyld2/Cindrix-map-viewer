@@ -1,3 +1,5 @@
+> **Superseded 2026-10-30.** This document was written before the viewer was compared with the main program. The `.cmap` format here (a ZIP with `manifest.json`) is **not** the format CindrixOps writes; see [CMAP_FORMAT.md](CMAP_FORMAT.md). Kept for history.
+
 # CindrixOps CMAP Viewer — Windows-First Architecture
 
 **Status:** Windows application foundation committed; map viewer functionality remains under development  
