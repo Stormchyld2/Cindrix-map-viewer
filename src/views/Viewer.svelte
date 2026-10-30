@@ -87,6 +87,10 @@
       const base = mapBase();
       const hasLetters = i.glyphs.length > 0;
       const usable = i.layers.filter((l) => !i.unsupported.includes(l.kind));
+      if (!usable.length) {
+        error = 'This map file holds only pictures this viewer cannot open yet.';
+        return;
+      }
       const sources: Record<string, unknown> = {};
       const rasters: unknown[] = [];
       rasterIds = {};
@@ -131,7 +135,7 @@
       map = m;
       m.addControl(new maplibregl.ScaleControl({ unit: metric ? 'metric' : 'imperial' }), 'bottom-left');
       m.on('error', (ev) => {
-        const e = ev as { error?: { status?: number }; tile?: unknown };
+        const e = ev as unknown as { error?: { status?: number }; tile?: unknown };
         if (e.error?.status === 404) return; // a square the map does not hold, or a missing letter: not a broken map
         if (e.tile) error = 'Some of the map could not be read: the file may be damaged.';
       });

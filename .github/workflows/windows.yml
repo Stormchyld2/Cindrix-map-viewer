@@ -23,9 +23,11 @@ jobs:
       - name: Frontend tests
         run: npm test
       - name: Type and Svelte checks
-        run: npm run check
+        shell: bash
+        run: bash .github/scripts/annotate.sh npm run check
       - name: Frontend build
-        run: npm run build
+        shell: bash
+        run: bash .github/scripts/annotate.sh npm run build
       - name: Generate Windows ICO from approved flame PNG
         shell: pwsh
         run: |
@@ -43,7 +45,8 @@ jobs:
           $stream = [System.IO.File]::Create('src-tauri/icons/icon.ico')
           try { $icon.Save($stream) } finally { $stream.Dispose(); $icon.Dispose(); $bmp.Dispose() }
       - name: Rust tests
-        run: cargo test --manifest-path src-tauri/Cargo.toml
+        shell: bash
+        run: bash .github/scripts/annotate.sh cargo test --manifest-path src-tauri/Cargo.toml
       - name: Build standalone Windows executable
         run: npm run tauri build -- --no-bundle
       - name: Upload portable Windows executable
