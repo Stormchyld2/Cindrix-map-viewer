@@ -1,3 +1,33 @@
-:root{font-family:Segoe UI,Arial,sans-serif;color:#ece7de;background:#11171c;font-synthesis:none}*{box-sizing:border-box}body{margin:0}.app{height:100vh;display:flex;flex-direction:column;background:radial-gradient(circle at 50% 40%,#23313a,#11171c 65%)}header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #3a4148;background:#181e24}.brand{display:flex;gap:15px;align-items:center}.mark{display:grid;place-items:center;width:48px;height:48px;border:2px solid #d7b56d;border-radius:10px;color:#d7b56d;font-size:30px;font-weight:bold}h1{font-size:21px;margin:0;font-weight:500}h1 strong{color:#d7b56d}small{font-size:10px;letter-spacing:2px;color:#9da7af}button{border:1px solid #d7b56d;color:#f5e8c7;background:transparent;border-radius:6px;padding:10px 15px;cursor:pointer}main{flex:1;display:grid;place-items:center}.empty{text-align:center;color:#c4cbd0}.symbol{font-size:90px;color:#d7b56d}h2{font-size:27px;color:#fff}.hint{color:#8e9ba5;font-size:13px}footer{padding:10px 24px;border-top:1px solid #3a4148;color:#8e9ba5;font-size:12px}@media(max-width:600px){header{padding:12px}h1{font-size:16px}small{letter-spacing:1px}.mark{width:38px;height:38px}}
-
-:root{--line2:#404952;--panel2:#1b252d;--muted:#aab5bd;--accent:#d7b56d;--panel:#1b252d;--text:#ece7de}main.map-workspace{display:block;overflow:auto;min-height:0}main.map-workspace>*{min-height:100%}button,input,select,textarea{font:inherit}
+:root {
+  font-family: Segoe UI, Roboto, Arial, sans-serif;
+  color: #ece7de;
+  background: #11171c;
+  font-synthesis: none;
+  --line2: #404952;
+  --panel: #1b252d;
+  --panel2: #1b252d;
+  --muted: #aab5bd;
+  --accent: #d7b56d;
+  --text: #ece7de;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; overscroll-behavior: none; }
+#app { height: 100%; }
+/* the real visible height on phones (dvh), with room for the notch and gesture bar */
+.app {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: radial-gradient(circle at 50% 40%, #23313a, #11171c 65%);
+}
+main.map-workspace { flex: 1; min-height: 0; display: block; overflow: hidden; }
+main.map-workspace > * { height: 100%; }
+button, input, select, textarea { font: inherit; }
+button { border: 1px solid var(--accent); color: #f5e8c7; background: transparent; border-radius: 6px; padding: 10px 15px; cursor: pointer; touch-action: manipulation; }
+button:active { background: rgba(215, 181, 109, 0.2); }
+/* the map must not be moved by the page's own gestures */
+.maplibregl-map { touch-action: none; }
+.maplibregl-ctrl-bottom-right { bottom: 28px; }

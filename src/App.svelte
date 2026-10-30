@@ -1,27 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import Maps from './views/Maps.svelte';
-  let status = 'No .cmap package installed';
-  let fullscreen = false;
-  onMount(async () => {
-    try {
-      const { getCurrentWindow } = await import('@tauri-apps/api/window');
-      fullscreen = await getCurrentWindow().isFullscreen();
-    } catch { /* browser preview */ }
-  });
-  async function toggleFullscreen() {
-    try {
-      const { getCurrentWindow } = await import('@tauri-apps/api/window');
-      const window = getCurrentWindow();
-      await window.setFullscreen(!await window.isFullscreen());
-      fullscreen = await window.isFullscreen();
-    } catch { status = 'Fullscreen control requires the desktop application.'; }
-  }
+  import Viewer from './views/Viewer.svelte';
 </script>
 
-<svelte:head><title>CindrixOps CMAP Viewer</title></svelte:head>
+<svelte:head><title>CindrixOps Map Viewer</title></svelte:head>
 <div class="app">
-  <header><div class="brand"><span class="mark">C</span><div><h1>CindrixOps <strong>CMAP Viewer</strong></h1><small>OFFLINE MAP VIEWER · WINDOWS FOUNDATION</small></div></div><button onclick={toggleFullscreen}>{fullscreen ? 'Exit fullscreen' : 'Fullscreen'}</button></header>
-  <main class="map-workspace"><Maps /></main>
-  <footer>Windows-first · Android tablet support planned · No network required for installed maps</footer>
+  <main class="map-workspace"><Viewer /></main>
 </div>

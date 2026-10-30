@@ -5,6 +5,33 @@ on:
   pull_request:
   workflow_dispatch:
 jobs:
+  browser-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install the test browser
+        run: |
+          npm install --no-save --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+      - name: Build the screen
+        run: npm run build
+      - name: Open real maps in a browser and try them
+        shell: bash
+        run: bash .github/scripts/annotate.sh node tests/e2e/run.mjs
+      - name: Keep the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-screenshots
+          path: tests/e2e/out
+          if-no-files-found: ignore
   build-windows:
     runs-on: windows-latest
     permissions:
@@ -23,9 +50,11 @@ jobs:
       - name: Frontend tests
         run: npm test
       - name: Type and Svelte checks
-        run: npm run check
+        shell: bash
+        run: bash .github/scripts/annotate.sh npm run check
       - name: Frontend build
-        run: npm run build
+        shell: bash
+        run: bash .github/scripts/annotate.sh npm run build
       - name: Generate Windows ICO from approved flame PNG
         shell: pwsh
         run: |
@@ -43,7 +72,8 @@ jobs:
           $stream = [System.IO.File]::Create('src-tauri/icons/icon.ico')
           try { $icon.Save($stream) } finally { $stream.Dispose(); $icon.Dispose(); $bmp.Dispose() }
       - name: Rust tests
-        run: cargo test --manifest-path src-tauri/Cargo.toml
+        shell: bash
+        run: bash .github/scripts/annotate.sh cargo test --manifest-path src-tauri/Cargo.toml
       - name: Build standalone Windows executable
         run: npm run tauri build -- --no-bundle
       - name: Upload portable Windows executable

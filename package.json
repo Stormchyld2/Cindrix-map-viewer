@@ -14,7 +14,6 @@
     "@tauri-apps/api": "^2.0.0",
     "@tauri-apps/plugin-dialog": "^2.0.0",
     "maplibre-gl": "^5.0.0",
-    "pmtiles": "^4.0.0",
     "@protomaps/basemaps": "^5.0.0"
   },
   "devDependencies": {
